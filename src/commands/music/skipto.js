@@ -1,0 +1,32 @@
+const Discord = require('discord.js');
+
+module.exports = async (client, interaction, args) => {
+    const player = client.player.players.get(interaction.guild.id);
+
+    const channel = interaction.member.voice.channel;
+        if (!channel) return client.errNormal({
+            error: `Вы не подключены к голосовому каналу!`,
+            type: 'editreply'
+        }, interaction);
+
+        if (player && (channel.id !== player?.voiceChannel)) return client.errNormal({
+            error: `Вы не подключены к тому же голосовому каналу!`,
+            type: 'editreply'
+        }, interaction);
+
+        if (!player || !player.queue.current) return client.errNormal({
+            error: "На этом сервере не воспроизводятся песни",
+            type: 'editreply'
+        }, interaction);
+
+    let number = interaction.options.getNumber('number');
+
+    player.skipto(parseInt(number))
+
+    client.succNormal({ 
+        text: `Переключил музыку на **${number}**`, 
+        type: 'editreply'
+    }, interaction);
+}
+
+ 
